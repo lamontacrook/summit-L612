@@ -1,1 +1,256 @@
 
+{
+  "id": "l612-preset",
+  "displayName": "L612 Preset",
+  "description": "Place you product on a model.",
+  "generativeModelUsage": {
+    "nano-banana-3": 1
+  },
+  "thumbnailUrl": "https://adobelabs.dev/developers/l612/media/media_1a67092e46079f8374dac29943cf9219d51af12fc.png",
+  "categories": [
+    "sharpie",
+    "sharpieSummit"
+  ],
+  "constants": {
+    "size": {
+      "height": 1024,
+      "width": 1024
+    }
+  },
+  "controls": {
+    "submitButton": {
+      "type": "submitButton",
+      "config": {
+        "label": "Generate",
+        "sequenceId": "main",
+        "keepPluginOpen": true
+      }
+    },
+    "endButton": {
+      "type": "endButton",
+      "config": {
+        "label": "Close"
+      }
+    },
+    "featureButton": {
+      "type": "displayElement",
+      "config": {
+        "label": "Increment",
+        "component": "featureButton",
+        "slot": "aura-prompt-bar-actions-right",
+        "slotWeight": 20
+      }
+    },
+    "filmstrip": {
+      "type": "displayElement",
+      "config": {
+        "component": "filmstrip",
+        "slot": "aura-prompt-bar-above",
+        "slotWeight": 10
+      }
+    },
+    "title": {
+      "type": "displayElement",
+      "config": {
+        "component": "title",
+        "slot": "aura-prompt-bar-header-left",
+        "slotWeight": 15
+      }
+    },
+    "headerDivider": {
+      "type": "displayElement",
+      "config": {
+        "component": "divider",
+        "attributes": {
+          "vertical": true
+        },
+        "slot": "aura-prompt-bar-header-left",
+        "slotWeight": 10
+      }
+    },
+    "modelLabel": {
+      "type": "displayElement",
+      "config": {
+        "component": "modelLabel",
+        "slot": "aura-prompt-bar-header-left",
+        "slotWeight": 5
+      }
+    },
+    "description": {
+      "type": "displayElement",
+      "config": {
+        "component": "description",
+        "slot": "aura-prompt-bar-subheader",
+        "slotWeight": 10
+      }
+    },
+    "viewPromptButton": {
+      "type": "displayElement",
+      "config": {
+        "component": "iconButton",
+        "attributes": {
+          "icon": "aiSparklesProperties",
+          "label": "View prompt",
+          "loud": true,
+          "sequence-id": "promotePreset",
+          "size": "s"
+        },
+        "slot": "aura-prompt-bar-header-right",
+        "slotWeight": 10
+      }
+    },
+    "eyedropper": {
+      "type": "displayElement",
+      "config": {
+        "component": "eyedropper",
+        "slot": "aura-prompt-bar-actions-left",
+        "slotWeight": 20
+      }
+    },
+    "metatagPrompt": {
+      "type": "textInput",
+      "config": {
+        "label": "Metatags",
+        "placeholder": "metatags",
+        "maxLength": 4096,
+        "slot": "aura-prompt-bar-content-top"
+      }
+    },
+    "actionPrompt": {
+      "type": "displayElement",
+      "config": {
+        "component": "featureButton",
+        "label": "Action",
+        "placeholder": "What are your Minis doing?",
+        "maxLength": 4096,
+        "slot": "aura-prompt-bar-content-top"
+      }
+    },
+    "imageReference1": {
+      "type": "binaryReference",
+      "config": {
+        "label": "Mini",
+        "mode": "bitmap",
+        "variant": "default",
+        "slot": "aura-prompt-bar-content-bottom"
+      }
+    },
+    "imageReference2": {
+      "type": "binaryReference",
+      "config": {
+        "label": "Mini (Optional)",
+        "mode": "bitmap",
+        "variant": "default",
+        "slot": "aura-prompt-bar-content-bottom"
+      }
+    },
+    "imageReference3": {
+      "type": "binaryReference",
+      "config": {
+        "label": "Mini (Optional)",
+        "mode": "bitmap",
+        "variant": "default",
+        "slot": "aura-prompt-bar-content-bottom"
+      }
+    },
+    "imageReference4": {
+      "type": "binaryReference",
+      "config": {
+        "label": "Mini (Optional)",
+        "mode": "bitmap",
+        "variant": "default",
+        "slot": "aura-prompt-bar-content-bottom"
+      }
+    }
+  },
+  "sequences": {
+    "main": {
+      "validation": [
+        {
+          "refs": [
+            "$.config.metatagPrompt.value"
+          ],
+          "expression": "refs[1]"
+        }
+      ],
+      "steps": [
+        {
+          "seedFilmstrip": {
+            "type": "seedFilmstrip",
+            "payload": {
+              "width": 1024,
+              "height": 1024
+            }
+          }
+        },
+        {
+          "request": {
+            "type": "request",
+            "request": {
+              "url": "https://hook.fusion.adobe.com/kmxv56ehbf732xs1x46y9q000om6sprw",
+              "method": "POST",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "query": {},
+              "body": {
+                "tags": "l612:male/business-casual",
+                "seat": "seat-00"
+              },
+              "$$injectors": [
+                {
+                  "from": "$.config.metatagPrompt.value",
+                  "to": "$.body.tags"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "processor": {
+            "type": "process",
+            "processor": "imageToFilmstrip",
+            "payload": {
+              "mimeType": "image/jpeg",
+              "width": 100,
+              "height": 100,
+              "$$injectors": [
+                {
+                  "from": "$.request.response[0].presigned",
+                  "to": "$.url"
+                },
+                {
+                  "from": "$.seedFilmstrip.resultId",
+                  "to": "$.resultId"
+                },
+                {
+                  "from": "$.seedFilmstrip.operationId",
+                  "to": "$.operationId"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "cleanupStep": {
+        "cleanup": {
+          "type": "removeFromFilmstrip",
+          "condition": {
+            "refs": [
+              "$.seedFilmstrip.resultId"
+            ],
+            "expression": "exists(refs[1])"
+          },
+          "payload": {
+            "$$injectors": [
+              {
+                "from": "$.seedFilmstrip.resultId",
+                "to": "$.resultId"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
